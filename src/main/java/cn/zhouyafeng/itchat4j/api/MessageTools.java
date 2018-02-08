@@ -51,11 +51,12 @@ public class MessageTools {
 	 * 
 	 * @author https://github.com/yaphone
 	 * @date 2017年5月4日 下午11:17:38
-	 * @param msg
+	 * @param text
 	 * @param toUserName
 	 */
 	private static void sendMsg(String text, String toUserName) {
-		if (text == null) {
+		if (text == null || text.length()==0) {
+			LOG.warn("发送消息为空");
 			return;
 		}
 		LOG.info(String.format("发送消息 %s: %s", toUserName, text));
@@ -71,7 +72,8 @@ public class MessageTools {
 	 * @param id
 	 */
 	public static void sendMsgById(String text, String id) {
-		if (text == null) {
+		if (text == null || text.length() == 0) {
+			LOG.warn("发送消息为空");
 			return;
 		}
 		sendMsg(text, id);
@@ -121,7 +123,8 @@ public class MessageTools {
 		try {
 			String paramStr = JSON.toJSONString(paramMap);
 			HttpEntity entity = myHttpClient.doPost(url, paramStr);
-			EntityUtils.toString(entity, Consts.UTF_8);
+			String text = EntityUtils.toString(entity, Consts.UTF_8);
+			LOG.debug("POST请求URL[{}]返回[{}]",url,text);
 		} catch (Exception e) {
 			LOG.error("webWxSendMsg", e);
 		}
@@ -138,7 +141,7 @@ public class MessageTools {
 	private static JSONObject webWxUploadMedia(String filePath) {
 		File f = new File(filePath);
 		if (!f.exists() && f.isFile()) {
-			LOG.info("file is not exist");
+			LOG.warn("[{}]文件不存在",filePath);
 			return null;
 		}
 		String url = String.format(URLEnum.WEB_WX_UPLOAD_MEDIA.getUrl(), core.getLoginInfo().get("fileUrl"));
@@ -186,6 +189,7 @@ public class MessageTools {
 		if (entity != null) {
 			try {
 				String result = EntityUtils.toString(entity, Consts.UTF_8);
+				LOG.debug("POST请求URL[{}]返回[{}]",url,result);
 				return JSON.parseObject(result);
 			} catch (Exception e) {
 				LOG.error("webWxUploadMedia 错误： ", e);
@@ -200,7 +204,7 @@ public class MessageTools {
 	 * 
 	 * @author https://github.com/yaphone
 	 * @date 2017年5月7日 下午10:32:45
-	 * @param nackName
+	 * @param nickName
 	 * @return
 	 */
 	public static boolean sendPicMsgByNickName(String nickName, String filePath) {
@@ -216,7 +220,7 @@ public class MessageTools {
 	 * 
 	 * @author https://github.com/yaphone
 	 * @date 2017年5月7日 下午10:34:24
-	 * @param nickName
+	 * @param userId
 	 * @param filePath
 	 * @return
 	 */
@@ -258,6 +262,7 @@ public class MessageTools {
 		if (entity != null) {
 			try {
 				String result = EntityUtils.toString(entity, Consts.UTF_8);
+				LOG.debug("POST请求URL[{}]返回[{}]",url,result);
 				return JSON.parseObject(result).getJSONObject("BaseResponse").getInteger("Ret") == 0;
 			} catch (Exception e) {
 				LOG.error("webWxSendMsgImg 错误： ", e);
@@ -354,6 +359,7 @@ public class MessageTools {
 		if (entity != null) {
 			try {
 				String result = EntityUtils.toString(entity, Consts.UTF_8);
+				LOG.debug("POST请求URL[{}]返回[{}]",url,result);
 				return JSON.parseObject(result).getJSONObject("BaseResponse").getInteger("Ret") == 0;
 			} catch (Exception e) {
 				LOG.error("错误: ", e);
@@ -367,8 +373,7 @@ public class MessageTools {
 	 * 
 	 * @date 2017年6月29日 下午10:08:43
 	 * @param msg
-	 * @param accept
-	 *            true 接受 false 拒绝
+	 * @param accept true: 接受; false: 拒绝
 	 */
 	public static void addFriend(BaseMsg msg, boolean accept) {
 		if (!accept) { // 不添加
@@ -409,6 +414,7 @@ public class MessageTools {
 			String paramStr = JSON.toJSONString(body);
 			HttpEntity entity = myHttpClient.doPost(url, paramStr);
 			result = EntityUtils.toString(entity, Consts.UTF_8);
+			LOG.debug("POST请求URL[{}]返回[{}]",url,result);
 		} catch (Exception e) {
 			LOG.error("webWxSendMsg", e);
 		}

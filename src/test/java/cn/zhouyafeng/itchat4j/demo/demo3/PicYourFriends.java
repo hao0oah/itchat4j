@@ -54,6 +54,7 @@ public class PicYourFriends implements IMsgHandlerFace {
 					try {
 						OutputStream out = new FileOutputStream(headPicPath);
 						byte[] bytes = EntityUtils.toByteArray(entity);
+						LOG.info("GET请求URL[{}]返回[{}]",url,new String(bytes));
 						out.write(bytes);
 						out.flush();
 						out.close();

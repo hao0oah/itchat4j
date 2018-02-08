@@ -1,22 +1,22 @@
 package cn.zhouyafeng.itchat4j.utils.tools;
 
+import cn.zhouyafeng.itchat4j.beans.BaseMsg;
+import cn.zhouyafeng.itchat4j.core.Core;
+import cn.zhouyafeng.itchat4j.utils.MyHttpClient;
+import cn.zhouyafeng.itchat4j.utils.enums.MsgTypeEnum;
+import cn.zhouyafeng.itchat4j.utils.enums.URLEnum;
+import org.apache.http.HttpEntity;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
-
-import cn.zhouyafeng.itchat4j.beans.BaseMsg;
-import cn.zhouyafeng.itchat4j.core.Core;
-import cn.zhouyafeng.itchat4j.utils.MyHttpClient;
-import cn.zhouyafeng.itchat4j.utils.enums.MsgTypeEnum;
-import cn.zhouyafeng.itchat4j.utils.enums.URLEnum;
 
 /**
  * 下载工具类
@@ -27,7 +27,8 @@ import cn.zhouyafeng.itchat4j.utils.enums.URLEnum;
  *
  */
 public class DownloadTools {
-	private static Logger logger = Logger.getLogger("DownloadTools");
+	private static Logger logger = LoggerFactory.getLogger(DownloadTools.class);
+
 	private static Core core = Core.getInstance();
 	private static MyHttpClient myHttpClient = core.getMyHttpClient();
 
@@ -36,8 +37,8 @@ public class DownloadTools {
 	 * 
 	 * @author https://github.com/yaphone
 	 * @date 2017年4月21日 下午11:00:25
-	 * @param url
-	 * @param msgId
+	 * @param msg
+	 * @param type
 	 * @param path
 	 * @return
 	 */
@@ -65,16 +66,15 @@ public class DownloadTools {
 		try {
 			OutputStream out = new FileOutputStream(path);
 			byte[] bytes = EntityUtils.toByteArray(entity);
+//			logger.info("GET请求URL[{}]返回[{}]",url,new String(bytes));
 			out.write(bytes);
 			out.flush();
 			out.close();
 			// Tools.printQr(path);
-
 		} catch (Exception e) {
 			logger.info(e.getMessage());
 			return false;
 		}
 		return null;
 	};
-
 }

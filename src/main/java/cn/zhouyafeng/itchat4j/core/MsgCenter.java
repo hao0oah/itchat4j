@@ -1,5 +1,6 @@
 package cn.zhouyafeng.itchat4j.core;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 
@@ -39,6 +40,7 @@ public class MsgCenter {
 	 */
 	public static JSONArray produceMsg(JSONArray msgList) {
 		JSONArray result = new JSONArray();
+
 		for (int i = 0; i < msgList.size(); i++) {
 			JSONObject msg = new JSONObject();
 			JSONObject m = msgList.getJSONObject(i);
@@ -60,8 +62,9 @@ public class MsgCenter {
 			} else {
 				CommonTools.msgFormatter(m, "Content");
 			}
-			if (m.getInteger("MsgType").equals(MsgCodeEnum.MSGTYPE_TEXT.getCode())) { // words
-																						// 文本消息
+
+			int type = m.getInteger("MsgType")==null?-1:m.getInteger("MsgType");
+			if (type == MsgCodeEnum.MSGTYPE_TEXT.getCode()) {// 文本消息
 				if (m.getString("Url").length() != 0) {
 					String regEx = "(.+?\\(.+?\\))";
 					Matcher matcher = CommonTools.getMatcher(regEx, m.getString("Content"));
@@ -77,19 +80,16 @@ public class MsgCenter {
 				}
 				m.put("Type", msg.getString("Type"));
 				m.put("Text", msg.getString("Text"));
-			} else if (m.getInteger("MsgType").equals(MsgCodeEnum.MSGTYPE_IMAGE.getCode())
-					|| m.getInteger("MsgType").equals(MsgCodeEnum.MSGTYPE_EMOTICON.getCode())) { // 图片消息
+			} else if (type == MsgCodeEnum.MSGTYPE_IMAGE.getCode() || type == MsgCodeEnum.MSGTYPE_EMOTICON.getCode()) { // 图片消息
 				m.put("Type", MsgTypeEnum.PIC.getType());
-			} else if (m.getInteger("MsgType").equals(MsgCodeEnum.MSGTYPE_VOICE.getCode())) { // 语音消息
+			} else if (type == MsgCodeEnum.MSGTYPE_VOICE.getCode()) { // 语音消息
 				m.put("Type", MsgTypeEnum.VOICE.getType());
-			} else if (m.getInteger("MsgType").equals(MsgCodeEnum.MSGTYPE_VERIFYMSG.getCode())) {// friends
+			} else if (type == MsgCodeEnum.MSGTYPE_VERIFYMSG.getCode()) {// friends
 				// 好友确认消息
 				// MessageTools.addFriend(core, userName, 3, ticket); // 确认添加好友
 				m.put("Type", MsgTypeEnum.VERIFYMSG.getType());
-
 			} else if (m.getInteger("MsgType").equals(MsgCodeEnum.MSGTYPE_SHARECARD.getCode())) { // 共享名片
 				m.put("Type", MsgTypeEnum.NAMECARD.getType());
-
 			} else if (m.getInteger("MsgType").equals(MsgCodeEnum.MSGTYPE_VIDEO.getCode())
 					|| m.getInteger("MsgType").equals(MsgCodeEnum.MSGTYPE_MICROVIDEO.getCode())) {// viedo
 				m.put("Type", MsgTypeEnum.VIEDO.getType());
@@ -121,40 +121,36 @@ public class MsgCenter {
 	 */
 	public static void handleMsg(IMsgHandlerFace msgHandler) {
 		while (true) {
-			if (core.getMsgList().size() > 0 && core.getMsgList().get(0).getContent() != null) {
-				if (core.getMsgList().get(0).getContent().length() > 0) {
-					BaseMsg msg = core.getMsgList().get(0);
-					if (msg.getType() != null) {
-						try {
-							if (msg.getType().equals(MsgTypeEnum.TEXT.getType())) {
-								String result = msgHandler.textMsgHandle(msg);
-								MessageTools.sendMsgById(result, core.getMsgList().get(0).getFromUserName());
-							} else if (msg.getType().equals(MsgTypeEnum.PIC.getType())) {
+			List<BaseMsg> msgList = core.getMsgList();
+			if(!msgList.isEmpty()){
+				BaseMsg msg = msgList.get(0);
+				if(msg.getContent()!=null && msg.getContent().length()>0){
+					String type = msg.getType();
+					LOG.debug("处理消息类型为[{}]",type);
 
-								String result = msgHandler.picMsgHandle(msg);
-								MessageTools.sendMsgById(result, core.getMsgList().get(0).getFromUserName());
-							} else if (msg.getType().equals(MsgTypeEnum.VOICE.getType())) {
-								String result = msgHandler.voiceMsgHandle(msg);
-								MessageTools.sendMsgById(result, core.getMsgList().get(0).getFromUserName());
-							} else if (msg.getType().equals(MsgTypeEnum.VIEDO.getType())) {
-								String result = msgHandler.viedoMsgHandle(msg);
-								MessageTools.sendMsgById(result, core.getMsgList().get(0).getFromUserName());
-							} else if (msg.getType().equals(MsgTypeEnum.NAMECARD.getType())) {
-								String result = msgHandler.nameCardMsgHandle(msg);
-								MessageTools.sendMsgById(result, core.getMsgList().get(0).getFromUserName());
-							} else if (msg.getType().equals(MsgTypeEnum.SYS.getType())) { // 系统消息
-								msgHandler.sysMsgHandle(msg);
-							} else if (msg.getType().equals(MsgTypeEnum.VERIFYMSG.getType())) { // 确认添加好友消息
-								String result = msgHandler.verifyAddFriendMsgHandle(msg);
-								MessageTools.sendMsgById(result,
-										core.getMsgList().get(0).getRecommendInfo().getUserName());
-							} else if (msg.getType().equals(MsgTypeEnum.MEDIA.getType())) { // 多媒体消息
-								String result = msgHandler.mediaMsgHandle(msg);
-								MessageTools.sendMsgById(result, core.getMsgList().get(0).getFromUserName());
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
+					if(MsgTypeEnum.TEXT.getType().equals(type)){
+						String result = msgHandler.textMsgHandle(msg);
+						MessageTools.sendMsgById(result, msg.getFromUserName());
+					} else if(MsgTypeEnum.PIC.getType().equals(type)){
+						String result = msgHandler.picMsgHandle(msg);
+						MessageTools.sendMsgById(result, msg.getFromUserName());
+					} else if(MsgTypeEnum.VOICE.getType().equals(type)){
+						String result = msgHandler.voiceMsgHandle(msg);
+						MessageTools.sendMsgById(result, msg.getFromUserName());
+					} else if(MsgTypeEnum.VIEDO.getType().equals(type)){
+						String result = msgHandler.viedoMsgHandle(msg);
+						MessageTools.sendMsgById(result, msg.getFromUserName());
+					} else if(MsgTypeEnum.NAMECARD.getType().equals(type)){
+						String result = msgHandler.nameCardMsgHandle(msg);
+						MessageTools.sendMsgById(result, msg.getFromUserName());
+					} else if(MsgTypeEnum.SYS.getType().equals(type)){// 系统消息
+						msgHandler.sysMsgHandle(msg);
+					} else if(MsgTypeEnum.VERIFYMSG.getType().equals(type)){// 确认添加好友消息
+						String result = msgHandler.verifyAddFriendMsgHandle(msg);
+						MessageTools.sendMsgById(result, msg.getRecommendInfo().getUserName());
+					} else if(MsgTypeEnum.MEDIA.getType().equals(type)){// 多媒体消息
+						String result = msgHandler.mediaMsgHandle(msg);
+						MessageTools.sendMsgById(result, msg.getFromUserName());
 					}
 				}
 				core.getMsgList().remove(0);

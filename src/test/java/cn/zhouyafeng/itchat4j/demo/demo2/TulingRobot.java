@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.util.EntityUtils;
@@ -19,6 +18,8 @@ import cn.zhouyafeng.itchat4j.face.IMsgHandlerFace;
 import cn.zhouyafeng.itchat4j.utils.MyHttpClient;
 import cn.zhouyafeng.itchat4j.utils.enums.MsgTypeEnum;
 import cn.zhouyafeng.itchat4j.utils.tools.DownloadTools;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 图灵机器人示例
@@ -29,7 +30,7 @@ import cn.zhouyafeng.itchat4j.utils.tools.DownloadTools;
  *
  */
 public class TulingRobot implements IMsgHandlerFace {
-	Logger logger = Logger.getLogger("TulingRobot");
+	private static Logger logger = LoggerFactory.getLogger(TulingRobot.class);
 	MyHttpClient myHttpClient = Core.getInstance().getMyHttpClient();
 	String url = "http://www.tuling123.com/openapi/api";
 	String apiKey = "597b34bea4ec4c85a775c469c84b6817"; // 这里是我申请的图灵机器人API接口，每天只能5000次调用，建议自己去申请一个，免费的:)
@@ -46,6 +47,7 @@ public class TulingRobot implements IMsgHandlerFace {
 		try {
 			HttpEntity entity = myHttpClient.doPost(url, paramStr);
 			result = EntityUtils.toString(entity, "UTF-8");
+			logger.info("POST请求URL[{}]返回[{}]",url,result);
 			JSONObject obj = JSON.parseObject(result);
 			if (obj.getString("code").equals("100000")) {
 				result = obj.getString("text");

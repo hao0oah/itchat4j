@@ -57,7 +57,7 @@ public class WechatTools {
 	 * 
 	 * @author https://github.com/yaphone
 	 * @date 2017年5月4日 下午10:56:31
-	 * @param name
+	 * @param nickName
 	 * @return
 	 */
 	public static String getUserNameByNickName(String nickName) {
@@ -157,6 +157,7 @@ public class WechatTools {
 		try {
 			HttpEntity entity = core.getMyHttpClient().doGet(url, params, false, null);
 			String text = EntityUtils.toString(entity, Consts.UTF_8); // 无消息
+			LOG.debug("GET请求URL[{}]返回[{}]",url,text);
 			return true;
 		} catch (Exception e) {
 			LOG.debug(e.getMessage());
@@ -176,7 +177,7 @@ public class WechatTools {
 	 * 根据用户昵称设置备注名称
 	 * 
 	 * @date 2017年5月27日 上午12:21:40
-	 * @param userName
+	 * @param nickName
 	 * @param remName
 	 */
 	public static void remarkNameByNickName(String nickName, String remName) {
@@ -195,7 +196,8 @@ public class WechatTools {
 		try {
 			String paramStr = JSON.toJSONString(msgMap);
 			HttpEntity entity = core.getMyHttpClient().doPost(url, paramStr);
-			// String result = EntityUtils.toString(entity, Consts.UTF_8);
+			 String result = EntityUtils.toString(entity, Consts.UTF_8);
+			LOG.debug("POST请求URL[{}]返回[{}]",url,result);
 			LOG.info("修改备注" + remName);
 		} catch (Exception e) {
 			LOG.error("remarkNameByUserName", e);

@@ -64,7 +64,6 @@ public class LoginServiceImpl implements ILoginService {
 
 	@Override
 	public boolean login() {
-
 		boolean isLogin = false;
 		// 组装参数和URL
 		List<BasicNameValuePair> params = new ArrayList<BasicNameValuePair>();
@@ -82,18 +81,16 @@ public class LoginServiceImpl implements ILoginService {
 
 			try {
 				String result = EntityUtils.toString(entity);
-				String status = checklogin(result);
+				LOG.debug("GET请求URL[{}]返回[{}]",URLEnum.LOGIN_URL.getUrl(),result);
 
-				if (ResultEnum.SUCCESS.getCode().equals(status)) {
-					processLoginInfo(result); // 处理结果
-					isLogin = true;
-					core.setAlive(isLogin);
-					break;
-				}
+				String status = checklogin(result);
 				if (ResultEnum.WAIT_CONFIRM.getCode().equals(status)) {
 					LOG.info("请点击微信确认按钮，进行登陆");
+				} else if (ResultEnum.SUCCESS.getCode().equals(status)) {
+					processLoginInfo(result); // 处理结果
+					core.setAlive(isLogin = true);
+					break;
 				}
-
 			} catch (Exception e) {
 				LOG.error("微信登陆异常！", e);
 			}
@@ -114,6 +111,8 @@ public class LoginServiceImpl implements ILoginService {
 
 		try {
 			String result = EntityUtils.toString(entity);
+			LOG.debug("GET请求URL[{}]返回[{}]",URLEnum.UUID_URL.getUrl(),result);
+
 			String regEx = "window.QRLogin.code = (\\d+); window.QRLogin.uuid = \"(\\S+?)\";";
 			Matcher matcher = CommonTools.getMatcher(regEx, result);
 			if (matcher.find()) {
@@ -136,6 +135,8 @@ public class LoginServiceImpl implements ILoginService {
 		try {
 			OutputStream out = new FileOutputStream(qrPath);
 			byte[] bytes = EntityUtils.toByteArray(entity);
+//			LOG.debug("GET请求URL[{}]返回[{}]",qrUrl,new String(bytes));
+
 			out.write(bytes);
 			out.flush();
 			out.close();
@@ -169,6 +170,7 @@ public class LoginServiceImpl implements ILoginService {
 		HttpEntity entity = httpClient.doPost(url, JSON.toJSONString(paramMap));
 		try {
 			String result = EntityUtils.toString(entity, Consts.UTF_8);
+			LOG.debug("POST请求URL[{}]返回[{}]",url,result);
 			JSONObject obj = JSON.parseObject(result);
 
 			JSONObject user = obj.getJSONObject(StorageLoginInfoEnum.User.getKey());
@@ -233,7 +235,8 @@ public class LoginServiceImpl implements ILoginService {
 
 		try {
 			HttpEntity entity = httpClient.doPost(url, paramStr);
-			EntityUtils.toString(entity, Consts.UTF_8);
+			String result = EntityUtils.toString(entity, Consts.UTF_8);
+			LOG.debug("POST请求URL[{}]返回[{}]",url,result);
 		} catch (Exception e) {
 			LOG.error("微信状态通知接口失败！", e);
 		}
@@ -340,6 +343,7 @@ public class LoginServiceImpl implements ILoginService {
 
 		try {
 			String result = EntityUtils.toString(entity, Consts.UTF_8);
+			LOG.debug("POST请求URL[{}]返回[{}]",url,result);
 			JSONObject fullFriendsJsonList = JSON.parseObject(result);
 			// 查看seq是否为0，0表示好友列表已全部获取完毕，若大于0，则表示好友列表未获取完毕，当前的字节数（断点续传）
 			long seq = 0;
@@ -362,6 +366,7 @@ public class LoginServiceImpl implements ILoginService {
 				params.remove(new BasicNameValuePair("seq", String.valueOf(seq)));
 
 				result = EntityUtils.toString(entity, Consts.UTF_8);
+				LOG.debug("GET请求URL[{}]返回[{}]",url,result);
 				fullFriendsJsonList = JSON.parseObject(result);
 
 				if (fullFriendsJsonList.get("Seq") != null) {
@@ -416,6 +421,7 @@ public class LoginServiceImpl implements ILoginService {
 		HttpEntity entity = httpClient.doPost(url, JSON.toJSONString(paramMap));
 		try {
 			String text = EntityUtils.toString(entity, Consts.UTF_8);
+			LOG.debug("POST请求URL[{}]返回[{}]",url,text);
 			JSONObject obj = JSON.parseObject(text);
 			JSONArray contactList = obj.getJSONArray("ContactList");
 			for (int i = 0; i < contactList.size(); i++) { // 群好友
@@ -451,7 +457,7 @@ public class LoginServiceImpl implements ILoginService {
 	 *
 	 * @author https://github.com/yaphone
 	 * @date 2017年4月9日 下午12:16:26
-	 * @param result
+	 * @param loginContent
 	 */
 	private void processLoginInfo(String loginContent) {
 		String regEx = "window.redirect_uri=\"(\\S+)\";";
@@ -488,6 +494,7 @@ public class LoginServiceImpl implements ILoginService {
 			try {
 				HttpEntity entity = myHttpClient.doGet(originalUrl, null, false, null);
 				text = EntityUtils.toString(entity);
+				LOG.debug("GET请求URL[{}]返回[{}]",originalUrl,text);
 			} catch (Exception e) {
 				LOG.info(e.getMessage());
 				return;
@@ -602,6 +609,7 @@ public class LoginServiceImpl implements ILoginService {
 		try {
 			HttpEntity entity = myHttpClient.doPost(url, paramStr);
 			String text = EntityUtils.toString(entity, Consts.UTF_8);
+			LOG.info("POST请求URL[{}]返回[{}]",url,text);
 			JSONObject obj = JSON.parseObject(text);
 			if (obj.getJSONObject("BaseResponse").getInteger("Ret") != 0) {
 				result = null;
@@ -654,6 +662,7 @@ public class LoginServiceImpl implements ILoginService {
 				return resultMap;
 			}
 			String text = EntityUtils.toString(entity);
+			LOG.debug("GET请求URL[{}]返回[{}]",url,text);
 			String regEx = "window.synccheck=\\{retcode:\"(\\d+)\",selector:\"(\\d+)\"\\}";
 			Matcher matcher = CommonTools.getMatcher(regEx, text);
 			if (!matcher.find() || matcher.group(1).equals("2")) {

@@ -1,9 +1,6 @@
 package cn.zhouyafeng.itchat4j.core;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -44,7 +41,7 @@ public class Core {
 
 	private String userName;
 	private String nickName;
-	private List<BaseMsg> msgList = new ArrayList<BaseMsg>();
+	private List<BaseMsg> msgList = new LinkedList<BaseMsg>();
 
 	private JSONObject userSelf; // 登陆账号自身信息
 	private List<JSONObject> memberList = new ArrayList<JSONObject>(); // 好友+群聊+公众号+特殊账号
