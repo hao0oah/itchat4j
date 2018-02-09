@@ -1,5 +1,6 @@
 package cn.zhouyafeng.itchat4j.controller;
 
+import cn.zhouyafeng.itchat4j.utils.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +31,7 @@ public class LoginController {
 			return;
 		}
 		while (true) {
-			for (int count = 0; count < 10; count++) {
+			for (int count = 0; count < Config.GET_QR_MAX_COUNT; count++) {
 				LOG.info("获取UUID");
 				while (loginService.getUuid() == null) {
 					LOG.info("1. 获取微信UUID");
@@ -42,7 +43,7 @@ public class LoginController {
 				LOG.info("2. 获取登陆二维码图片");
 				if (loginService.getQR(qrPath)) {
 					break;
-				} else if (count == 10) {
+				} else if (count == Config.GET_QR_MAX_COUNT) {
 					LOG.error("2.2. 获取登陆二维码图片失败，系统退出");
 					System.exit(0);
 				}

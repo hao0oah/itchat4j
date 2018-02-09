@@ -1,61 +1,66 @@
 package cn.zhouyafeng.itchat4j.utils;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Properties;
 
 import cn.zhouyafeng.itchat4j.utils.enums.OsNameEnum;
 
 /**
  * 配置信息
- * 
  * @author https://github.com/yaphone
  * @date 创建时间：2017年4月23日 下午2:26:21
  * @version 1.0
- *
  */
 public class Config {
 
-	public static final String API_WXAPPID = "API_WXAPPID";
+	private static Properties prop = new Properties();
 
-	public static final String picDir = "D://itchat4j";
-	public static final String VERSION = "1.2.18";
-	public static final String BASE_URL = "https://login.weixin.qq.com";
+	static{
+		String setting_path = "/setting.properties";
+		try {
+			prop.load(Config.class.getClass().getResourceAsStream(setting_path));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static final String API_WXAPPID = "API_WXAPPID";
+	public static final String BASE_DIR = prop.getProperty("itchat4j.base_dir");
+	public static final String PIC_DIR = prop.getProperty("itchat4j.pic_dir");
+	public static final String QR_DIR = prop.getProperty("itchat4j.qr_dir");
+	public static final String FILE_DIR = prop.getProperty("itchat4j.file_dir");
+	public static final String VIDEO_DIR = prop.getProperty("itchat4j.video_dir");
+	public static final String VOICE_DIR = prop.getProperty("itchat4j.voice_dir");
+	public static final String VERSION = prop.getProperty("itchat4j.version");
+	public static final String BASE_URL = prop.getProperty("itchat4j.base_url");
+	public static final String DEFAULT_QR = prop.getProperty("itchat4j.qr_jpg");
 	public static final String OS = "";
 	public static final String DIR = "";
-	public static final String DEFAULT_QR = "QR.jpg";
 	public static final String USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36";
+	public static final ArrayList<String> API_SPECIAL_USER = new ArrayList<String>(Arrays.asList(prop.getProperty("itchat4j.special_user").split(",")));
 
-	public static final ArrayList<String> API_SPECIAL_USER = new ArrayList<String>(Arrays.asList("filehelper", "weibo",
-			"qqmail", "fmessage", "tmessage", "qmessage", "qqsync", "floatbottle", "lbsapp", "shakeapp", "medianote",
-			"qqfriend", "readerapp", "blogapp", "facebookapp", "masssendapp", "meishiapp", "feedsapp", "voip",
-			"blogappweixin", "brandsessionholder", "weixin", "weixinreminder", "officialaccounts", "wxitil",
-			"notification_messages", "wxid_novlwrv3lqwv11", "gh_22b87fa7cb3c", "userexperience_alarm"));
+	public static final int GET_QR_MAX_COUNT = Integer.valueOf(prop.getProperty("itchat4j.get_qr_max_count"));
+	public static final int SYNC_CHECK_SLEEP = Integer.valueOf(prop.getProperty("itchat4j.sync_check_sleep"));
 
 	/**
 	 * 获取文件目录
-	 * 
-	 * @author https://github.com/yaphone
-	 * @date 2017年4月8日 下午10:27:42
-	 * @return
 	 */
 	public static String getLocalPath() {
 		String localPath = null;
 		try {
 			localPath = new File("").getCanonicalPath();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return localPath;
 	}
 
 	/**
-	 * 获取系统平台
-	 * 
-	 * @author https://github.com/yaphone
-	 * @date 2017年4月8日 下午10:27:53
+	 * 获取操作系统平台
 	 */
 	public static OsNameEnum getOsNameEnum() {
 		String os = System.getProperty("os.name").toUpperCase();

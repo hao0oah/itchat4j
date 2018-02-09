@@ -257,6 +257,7 @@ public class LoginServiceImpl implements ILoginService {
 						LOG.info(JSONObject.toJSONString(resultMap));
 						String retcode = resultMap.get("retcode");
 						String selector = resultMap.get("selector");
+
 						if (retcode.equals(RetCodeEnum.UNKOWN.getCode())) {
 							LOG.info(RetCodeEnum.UNKOWN.getType());
 							continue;
@@ -309,7 +310,6 @@ public class LoginServiceImpl implements ILoginService {
 										LOG.info(e.getMessage());
 									}
 								}
-
 							}
 						} else {
 							JSONObject obj = webWxSync();
@@ -327,11 +327,9 @@ public class LoginServiceImpl implements ILoginService {
 							}
 						}
 					}
-
 				}
 			}
 		}).start();
-
 	}
 
 	@Override
@@ -347,12 +345,12 @@ public class LoginServiceImpl implements ILoginService {
 			JSONObject fullFriendsJsonList = JSON.parseObject(result);
 			// 查看seq是否为0，0表示好友列表已全部获取完毕，若大于0，则表示好友列表未获取完毕，当前的字节数（断点续传）
 			long seq = 0;
-			long currentTime = 0L;
-			List<BasicNameValuePair> params = new ArrayList<BasicNameValuePair>();
-			if (fullFriendsJsonList.get("Seq") != null) {
-				seq = fullFriendsJsonList.getLong("Seq");
-				currentTime = new Date().getTime();
-			}
+            long currentTime = 0L;
+            List<BasicNameValuePair> params = new ArrayList<BasicNameValuePair>();
+            if (fullFriendsJsonList.get("Seq") != null) {
+                seq = fullFriendsJsonList.getLong("Seq");
+                currentTime = new Date().getTime();
+            }
 			core.setMemberCount(fullFriendsJsonList.getInteger(StorageLoginInfoEnum.MemberCount.getKey()));
 			JSONArray member = fullFriendsJsonList.getJSONArray(StorageLoginInfoEnum.MemberList.getKey());
 			// 循环获取seq直到为0，即获取全部好友列表 ==0：好友获取完毕 >0：好友未获取完毕，此时seq为已获取的字节数
@@ -606,14 +604,14 @@ public class LoginServiceImpl implements ILoginService {
 				core.getLoginInfo().get(StorageLoginInfoEnum.SyncKey.getKey()));
 		paramMap.put("rr", -new Date().getTime() / 1000);
 		String paramStr = JSON.toJSONString(paramMap);
+
 		try {
 			HttpEntity entity = myHttpClient.doPost(url, paramStr);
 			String text = EntityUtils.toString(entity, Consts.UTF_8);
-			LOG.info("POST请求URL[{}]返回[{}]",url,text);
+			LOG.debug("POST请求URL[{}]返回[{}]",url,text);
+
 			JSONObject obj = JSON.parseObject(text);
-			if (obj.getJSONObject("BaseResponse").getInteger("Ret") != 0) {
-				result = null;
-			} else {
+			if (obj.getJSONObject("BaseResponse").getInteger("Ret") == 0) {
 				result = obj;
 				core.getLoginInfo().put(StorageLoginInfoEnum.SyncKey.getKey(), obj.getJSONObject("SyncCheckKey"));
 				JSONArray syncArray = obj.getJSONObject(StorageLoginInfoEnum.SyncKey.getKey()).getJSONArray("List");
@@ -627,7 +625,7 @@ public class LoginServiceImpl implements ILoginService {
 						synckey.substring(0, synckey.length() - 1));// 1_656161336|2_656161626|3_656161313|11_656159955|13_656120033|201_1492273724|1000_1492265953|1001_1492250432|1004_1491805192
 			}
 		} catch (Exception e) {
-			LOG.info(e.getMessage());
+			LOG.error(e.getMessage());
 		}
 		return result;
 
@@ -666,7 +664,7 @@ public class LoginServiceImpl implements ILoginService {
 			String regEx = "window.synccheck=\\{retcode:\"(\\d+)\",selector:\"(\\d+)\"\\}";
 			Matcher matcher = CommonTools.getMatcher(regEx, text);
 			if (!matcher.find() || matcher.group(1).equals("2")) {
-				LOG.info(String.format("Unexpected sync check result: %s", text));
+				LOG.warn(String.format("Unexpected sync check result: %s", text));
 			} else {
 				resultMap.put("retcode", matcher.group(1));
 				resultMap.put("selector", matcher.group(2));

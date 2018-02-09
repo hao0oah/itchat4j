@@ -10,6 +10,7 @@ public enum ResultEnum {
     SUCCESS("200", "成功"),
     WAIT_CONFIRM("201", "请在手机上点击确认"),
     WAIT_SCAN("400", "请扫描二维码");
+    // 408
 
     private String code;
     private String msg;
