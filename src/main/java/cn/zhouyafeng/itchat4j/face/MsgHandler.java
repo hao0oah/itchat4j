@@ -10,7 +10,7 @@ import cn.zhouyafeng.itchat4j.beans.BaseMsg;
  * @version 1.0
  *
  */
-public interface IMsgHandlerFace {
+public interface MsgHandler {
 	/**
 	 * 
 	 * @author https://github.com/yaphone

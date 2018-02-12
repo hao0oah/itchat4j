@@ -16,7 +16,7 @@ import cn.zhouyafeng.itchat4j.Wechat;
 import cn.zhouyafeng.itchat4j.api.WechatTools;
 import cn.zhouyafeng.itchat4j.beans.BaseMsg;
 import cn.zhouyafeng.itchat4j.core.Core;
-import cn.zhouyafeng.itchat4j.face.IMsgHandlerFace;
+import cn.zhouyafeng.itchat4j.face.MsgHandler;
 import cn.zhouyafeng.itchat4j.utils.MyHttpClient;
 import cn.zhouyafeng.itchat4j.utils.enums.StorageLoginInfoEnum;
 
@@ -28,7 +28,7 @@ import cn.zhouyafeng.itchat4j.utils.enums.StorageLoginInfoEnum;
  * @version 1.0
  *
  */
-public class PicYourFriends implements IMsgHandlerFace {
+public class PicYourFriends implements MsgHandler {
 	private static Logger LOG = LoggerFactory.getLogger(PicYourFriends.class);
 	private static final Core core = Core.getInstance();
 	private static final MyHttpClient myHttpClient = core.getMyHttpClient();
@@ -101,7 +101,7 @@ public class PicYourFriends implements IMsgHandlerFace {
 
 	public static void main(String[] args) {
 		String qrPath = "D://itchat4j//login"; // 保存登陆二维码图片的路径，这里需要在本地新建目录
-		IMsgHandlerFace msgHandler = new PicYourFriends(); // 实现IMsgHandlerFace接口的类
+		MsgHandler msgHandler = new PicYourFriends(); // 实现IMsgHandlerFace接口的类
 		Wechat wechat = new Wechat(msgHandler, qrPath); // 【注入】
 		wechat.start(); // 启动服务，会在qrPath下生成一张二维码图片，扫描即可登陆，注意，二维码图片如果超过一定时间未扫描会过期，过期时会自动更新，所以你可能需要重新打开图片
 	}

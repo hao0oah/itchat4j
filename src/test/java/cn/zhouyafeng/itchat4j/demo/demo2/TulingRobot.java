@@ -14,7 +14,7 @@ import com.alibaba.fastjson.JSONObject;
 import cn.zhouyafeng.itchat4j.Wechat;
 import cn.zhouyafeng.itchat4j.beans.BaseMsg;
 import cn.zhouyafeng.itchat4j.core.Core;
-import cn.zhouyafeng.itchat4j.face.IMsgHandlerFace;
+import cn.zhouyafeng.itchat4j.face.MsgHandler;
 import cn.zhouyafeng.itchat4j.utils.MyHttpClient;
 import cn.zhouyafeng.itchat4j.utils.enums.MsgTypeEnum;
 import cn.zhouyafeng.itchat4j.utils.tools.DownloadTools;
@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * @version 1.0
  *
  */
-public class TulingRobot implements IMsgHandlerFace {
+public class TulingRobot implements MsgHandler {
 	private static Logger logger = LoggerFactory.getLogger(TulingRobot.class);
 	MyHttpClient myHttpClient = Core.getInstance().getMyHttpClient();
 	String url = "http://www.tuling123.com/openapi/api";
@@ -82,7 +82,7 @@ public class TulingRobot implements IMsgHandlerFace {
 	}
 
 	public static void main(String[] args) {
-		IMsgHandlerFace msgHandler = new TulingRobot();
+		MsgHandler msgHandler = new TulingRobot();
 		Wechat wechat = new Wechat(msgHandler, "D://itchat4j/login");
 		wechat.start();
 	}

@@ -11,7 +11,7 @@ import cn.zhouyafeng.itchat4j.api.WechatTools;
 import cn.zhouyafeng.itchat4j.beans.BaseMsg;
 import cn.zhouyafeng.itchat4j.beans.RecommendInfo;
 import cn.zhouyafeng.itchat4j.core.Core;
-import cn.zhouyafeng.itchat4j.face.IMsgHandlerFace;
+import cn.zhouyafeng.itchat4j.face.MsgHandler;
 import cn.zhouyafeng.itchat4j.utils.enums.MsgTypeEnum;
 import cn.zhouyafeng.itchat4j.utils.tools.DownloadTools;
 
@@ -23,7 +23,7 @@ import cn.zhouyafeng.itchat4j.utils.tools.DownloadTools;
  * @version 1.0
  *
  */
-public class SimpleDemo implements IMsgHandlerFace {
+public class SimpleDemo implements MsgHandler {
 	Logger LOG = Logger.getLogger(SimpleDemo.class);
 
 	@Override

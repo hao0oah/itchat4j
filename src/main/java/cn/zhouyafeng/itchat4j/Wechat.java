@@ -5,13 +5,13 @@ import org.slf4j.LoggerFactory;
 
 import cn.zhouyafeng.itchat4j.controller.LoginController;
 import cn.zhouyafeng.itchat4j.core.MsgCenter;
-import cn.zhouyafeng.itchat4j.face.IMsgHandlerFace;
+import cn.zhouyafeng.itchat4j.face.MsgHandler;
 
 public class Wechat {
-	private static final Logger LOG = LoggerFactory.getLogger(Wechat.class);
-	private IMsgHandlerFace msgHandler;
+    private static final Logger LOG = LoggerFactory.getLogger(Wechat.class);
+    private MsgHandler msgHandler;
 
-	public Wechat(IMsgHandlerFace msgHandler, String qrPath) {
+	public Wechat(MsgHandler msgHandler, String qrPath) {
 		System.setProperty("jsse.enableSNIExtension", "false"); // 防止SSL错误
 		this.msgHandler = msgHandler;
 

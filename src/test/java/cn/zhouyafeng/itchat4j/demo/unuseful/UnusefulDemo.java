@@ -5,7 +5,7 @@ import java.io.IOException;
 import cn.zhouyafeng.itchat4j.Wechat;
 import cn.zhouyafeng.itchat4j.api.AssistTools;
 import cn.zhouyafeng.itchat4j.beans.BaseMsg;
-import cn.zhouyafeng.itchat4j.face.IMsgHandlerFace;
+import cn.zhouyafeng.itchat4j.face.MsgHandler;
 
 /**
  * 自用的测试类，请无视
@@ -15,7 +15,7 @@ import cn.zhouyafeng.itchat4j.face.IMsgHandlerFace;
  * @version 1.0
  *
  */
-public class UnusefulDemo implements IMsgHandlerFace {
+public class UnusefulDemo implements MsgHandler {
 
 	@Override
 	public String textMsgHandle(BaseMsg msg) {
@@ -62,7 +62,7 @@ public class UnusefulDemo implements IMsgHandlerFace {
 	}
 
 	public static void main(String[] args) {
-		IMsgHandlerFace msgHandler = new UnusefulDemo();
+		MsgHandler msgHandler = new UnusefulDemo();
 		Wechat wechat = new Wechat(msgHandler, "D://itchat4j/login");
 		wechat.start();
 	}

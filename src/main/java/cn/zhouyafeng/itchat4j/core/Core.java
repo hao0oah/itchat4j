@@ -2,6 +2,8 @@ package cn.zhouyafeng.itchat4j.core;
 
 import java.util.*;
 
+import cn.zhouyafeng.itchat4j.face.MsgQueue;
+import cn.zhouyafeng.itchat4j.face.impl.MsgListQueue;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -21,9 +23,7 @@ public class Core {
 
 	private static Core instance;
 
-	private Core() {
-
-	}
+	private Core() {}
 
 	public static Core getInstance() {
 		if (instance == null) {
@@ -42,6 +42,7 @@ public class Core {
 	private String userName;
 	private String nickName;
 	private List<BaseMsg> msgList = new LinkedList<BaseMsg>();
+	private MsgQueue msgQueue = MsgListQueue.getInstance();
 
 	private JSONObject userSelf; // 登陆账号自身信息
 	private List<JSONObject> memberList = new ArrayList<JSONObject>(); // 好友+群聊+公众号+特殊账号

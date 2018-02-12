@@ -12,7 +12,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import cn.zhouyafeng.itchat4j.api.MessageTools;
 import cn.zhouyafeng.itchat4j.beans.BaseMsg;
-import cn.zhouyafeng.itchat4j.face.IMsgHandlerFace;
+import cn.zhouyafeng.itchat4j.face.MsgHandler;
 import cn.zhouyafeng.itchat4j.utils.enums.MsgCodeEnum;
 import cn.zhouyafeng.itchat4j.utils.enums.MsgTypeEnum;
 import cn.zhouyafeng.itchat4j.utils.tools.CommonTools;
@@ -119,7 +119,7 @@ public class MsgCenter {
 	 * @date 2017年5月14日 上午10:52:34
 	 * @param msgHandler
 	 */
-	public static void handleMsg(IMsgHandlerFace msgHandler) {
+	public static void handleMsg(MsgHandler msgHandler) {
 		while (true) {
 			List<BaseMsg> msgList = core.getMsgList();
 			if(!msgList.isEmpty()){
